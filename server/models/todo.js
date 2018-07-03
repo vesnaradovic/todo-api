@@ -18,4 +18,6 @@ var Todo = mongoose.model('Todo', {
     }
   });
 
+
+  //otherwise we cannot use this in the files that require it
   module.exports = {Todo};
