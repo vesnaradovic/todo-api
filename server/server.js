@@ -5,6 +5,7 @@ const express = require('express');
 //setting it equal to the returning result requiring the library
 const bodyParser = require('body-parser');
 
+const {ObjectID} = require('mongodb');
 
 //local imports
 //we require the mongoose file; returning result from the file we created
@@ -42,6 +43,38 @@ app.post('/todos', (req, res) => {
   }, (e) => {
     res.status(400).send(e);
   });
+});
+
+//GET /todos/124124
+
+app.get('/todos/:id', (req,res) => {
+  var id = req.params.id;
+  
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+  //validate id
+  // not passing: 404
+
+
+  Todo.findById(id).then((todo) => {
+
+    if (!todo) {
+      return res.status(404).send();
+    }
+
+    res.send({todo});
+
+  }).catch((e) => {
+    res.status(400).send();
+  })
+  //findbyid
+    //success
+      //if todo - send it back
+      //if not - 404 with an empty file
+    //error
+      //400 - and send empty body back
+    
 });
 
 app.listen(3000, () => {
