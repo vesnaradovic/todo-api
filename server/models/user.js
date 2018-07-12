@@ -18,7 +18,7 @@ var UserSchema = new mongoose.Schema({
   }, 
   password: {
     type: String,
-    required: true,
+    require: true,
     minlength: 6
   },
   tokens: [{
@@ -46,10 +46,11 @@ UserSchema.methods.generateAuthToken = function () {
   var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
  
 
-  user.tokens.concat([access, token]);
+user.tokens.concat(access, token);
 
-  return user.save().then(() => {
-    return token;
+
+return user.save().then(() => {
+  return token;
   });
 };
 

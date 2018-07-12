@@ -76,7 +76,7 @@ app.patch('/todos/:id', (req,res) => {
   })
 });
 
-app.post('/users', (req,res) => {
+app.post('/users', (req, res) => {
   var body = _.pick(req.body, ['email', 'password']);
   var user = new User(body);
 
@@ -89,11 +89,8 @@ app.post('/users', (req,res) => {
   })
 });
 
-
-
 app.get('/users/me', authenticate, (req, res) => {
- res.send(req.user);
-
+  res.send(req.user);
 });
 
 app.listen(port, () => {
