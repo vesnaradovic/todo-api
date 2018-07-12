@@ -4,6 +4,27 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+
+UserSchema.methods.toJSON = function () {
+  var user = this;
+  var userObject = user.toObject();
+
+  return _.pick(userObject, ['_id', 'email']);
+};
+
+UserSchema.methods.generateAuthToken = function () {
+  var user = this;
+  var access = 'auth';
+  var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
+ 
+
+user.tokens.concat([access, token]);
+
+
+return user.save().then(() => {
+  return token;
+  });
+};
 var UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -22,35 +43,21 @@ var UserSchema = new mongoose.Schema({
     minlength: 6
   },
   tokens: [{
-    access: {
-      type: String,
-      required: true,
-    }, 
-    token: {
-      type: String,
-      required: true
-    }
+    access: 'auth',
+    token: jwt.sign({_id: user._id, access: 'auth'}, 'abc123').toString()
   }]
 });
 
-UserSchema.methods.toJSON = function () {
+
+
+
+UserSchema.methods.removeToken = function (token) {
   var user = this;
-  var userObject = user.toObject();
 
-  return _.pick(userObject, ['_id', 'email']);
-};
-
-UserSchema.methods.generateAuthToken = function () {
-  var user = this;
-  var access = "auth";
-  var token = jwt.sign({_id: user._id.toHexString(), access}, 'abc123').toString();
- 
-
-user.tokens.concat([access, token]);
-
-
-return user.save().then(() => {
-  return token;
+  return user.update({
+    $pull: {
+      tokens: {token}
+    }
   });
 };
 
